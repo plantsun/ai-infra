@@ -1,0 +1,35 @@
+# 默认从PyPI下载通用Python依赖。
+--index-url https://pypi.org/simple
+
+# 从PyTorch官方cu118索引下载CUDA 11.8版本的PyTorch wheel。
+--extra-index-url https://download.pytorch.org/whl/cu118
+
+# 安装与CUDA 11.8兼容的PyTorch。
+torch==2.3.1+cu118
+
+# 固定数值计算依赖版本，便于复现实验环境。
+numpy==2.2.6
+
+# 安装TileLang源码构建时使用的并行编译工具。
+ninja==1.13.2
+
+# 安装TileLang v0.1.9源码构建所需的Cython版本。
+Cython==3.1.8
+
+# 安装Python项目的CMake构建后端。
+scikit-build-core==1.0.3
+
+# 安装源码构建使用的CMake命令。
+cmake==4.4.3
+
+# 安装修复Linux动态库搜索路径所需的patchelf。
+patchelf==0.19.1.0
+
+# 安装TileLang编译和符号处理所需的Z3绑定。
+z3-solver==4.15.4.0
+
+# 固定与TileLang v0.1.9兼容的TVM FFI版本。
+apache-tvm-ffi==0.1.9
+
+# 安装项目测试框架。
+pytest==9.1.1

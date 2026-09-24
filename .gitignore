@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+*.log
+
+kernel/results/*.csv
+kernel/results/*.json
+kernel/results/*.nsys-rep
+kernel/results/*.sqlite
