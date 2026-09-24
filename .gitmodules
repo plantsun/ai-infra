@@ -1,0 +1,3 @@
+[submodule "kernel/tilelang"]
+	path = kernel/tilelang
+	url = git@github.com:plantsun/tilelang.git
