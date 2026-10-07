@@ -126,6 +126,62 @@ backend,M,N,K,dtype,BM,BN,BK,latency_ms,tflops
 
 > Torch行的`BM、BN、BK`为空，TileLang行会记录实际分块参数。
 
+## TileLang GEMM的BM分块扫描实验
+
+该实验固定矩阵形状和其他内核参数，只改变M方向分块大小`BM`，用于观察`BM`对TileLang FP16纯GEMM性能的影响。
+
+固定配置如下：
+
+```text
+M: 1024
+N: 4096
+K: 4096
+BM: 32,64,128
+BN: 128
+BK: 32
+num_threads: 128
+num_stages: 3
+dtype: fp16
+warmup: 20
+iters: 100
+```
+
+在项目根目录运行：
+
+```zsh
+# 对BM等于32、64和128的TileLang内核依次执行正确性验证和性能测试。
+python kernel/benchmark/bench_gemm_bm.py
+```
+
+也可以通过命令行调整预热次数、正式计时次数、随机种子和CSV输出路径：
+
+```zsh
+# 使用指定预热次数和计时次数运行BM扫描实验。
+python kernel/benchmark/bench_gemm_bm.py --warmup 20 --iters 100 --seed 0
+```
+
+三组配置共用同一组随机输入和同一个`torch.matmul`参考结果。每个BM配置都严格按照以下顺序执行：
+
+```text
+编译当前BM配置
+↓
+计算TileLang输出
+↓
+torch.testing.assert_close
+↓
+correctness = PASS
+↓
+CUDA Event性能计时
+```
+
+FP16正确性比较使用`rtol=1e-2`和`atol=1e-1`，不要求TileLang与PyTorch逐位相同。任何配置验证失败时，脚本都会输出`correctness = FAIL`并立即停止，不会把错误配置写入性能结果。
+
+结果会覆盖写入`kernel/results/tilelang_gemm_bm_results.csv`，列顺序固定为：
+
+```text
+BM,BN,BK,num_threads,num_stages,latency_ms,TFLOPS,correctness
+```
+
 ## PyTorch GEMM基线
 
 运行命令：
@@ -156,8 +212,8 @@ K: 1024
 dtype: fp16
 device: NVIDIA A100 80GB PCIe
 capability: [8, 0]
-torch: 2.3.1+cu118
-torch_cuda: 11.8
+torch: 2.6.0+cu124
+torch_cuda: 12.4
 latency_ms: <实测值>
 tflops: <实测值>
 output_shape: [1024, 1024]
